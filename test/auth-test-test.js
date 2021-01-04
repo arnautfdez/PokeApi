@@ -15,10 +15,35 @@ describe('Suite de pruebas auth', () => {
                 done();
             });
     });
+
+    it('should return 400 when no data is provided', (done) => {
+        chai.request(app)
+            .get('/login')
+            .end((err, res) => {
+                chai.assert.equal(res.statusCode, 404);
+                done();
+            });
+    });
+
+    it('should return 200 and token for successful login', (done) => {
+        chai.request(app)
+            .post('/login')
+            .set('content-type', 'application/json')
+            .send({user: 'arnautfdez', password: '1234'})
+            .end((err, res) => {
+                chai.assert.equal(res.statusCode, 200);
+                done();
+            });
+    });
+
     it('should return 200 when jwt token is valid', (done) => {
         chai.request(app)
             .post('/login')
+            .set('content-type', 'application/json')
+            .send({user: 'arnautfdez', password: '1234'})
             .end((err, res) => {
+                // Expect valid login
+                chai.assert.equal(res.statusCode, 200);
                 chai.request(app)
                     .get('/team')
                     .set('Authorization', `JWT ${res.body.token}`)
