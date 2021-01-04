@@ -12,7 +12,7 @@ app.post('/team/pokemons', () => {
     res.status(200).send('Hello World!');
 });
 
-app.get('/team', () => {
+app.get('/team', (req, res) => {
     res.status(200).send('Hello World!');
 });
 
