@@ -9,11 +9,11 @@ const registerUser = (userName, password) => {
     let hashedPwd = crypto.hashPasswordSync(password);
         // Guardar en la base de datos nuestro usuario
     let userId = uuid.v4();
-        userDatabase[userId] = {
-            userName: userName,
-            password: hashedPwd
-        }
-        teams.bootstrapTeam(userId);
+    userDatabase[userId] = {
+        userName: userName,
+        password: hashedPwd
+    }
+    teams.bootstrapTeam(userId);
 }
 
 const getUser = (userId) => {

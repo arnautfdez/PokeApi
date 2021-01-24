@@ -13,20 +13,29 @@ describe('Suite de pruebas teams', () => {
             .set('content-type', 'application/json')
             .send({user: 'arnautfdez', password: '1234'})
             .end((err, res) => {
+                let token = res.body.token;
                 // Expect valid login
                 chai.assert.equal(res.statusCode, 200);
                 chai.request(app)
-                    .get('/teams')
-                    .set('Authorization', `JWT ${res.body.token}`)
+                    .put('/teams')
+                    .send({
+                        team: [{name: 'Charizard'}, {name: 'Blastoise'}]
+                    })
+                    .set('Authorization', `JWT ${token}`)
                     .end((err, res) => {
-                        // tiene equipo con Charizard y Blastoise
-                        // { trainer: 'arnautfdez', team: [Pokemon]}
-                        chai.assert.equal(res.statusCode, 200);
-                        chai.assert.equal(res.body.trainer, 'arnautfdez');
-                        chai.assert.equal(res.body.team.length, 2);
-                        chai.assert.equal(res.body.team[0].name, 'Charizard');
-                        chai.assert.equal(res.body.team[1].name, 'Blastoise');
-                        done();
+                        chai.request(app)
+                            .get('/teams')
+                            .set('Authorization', `JWT ${token}`)
+                            .end((err, res) => {
+                                // tiene equipo con Charizard y Blastoise
+                                // { trainer: 'arnautfdez', team: [Pokemon]}
+                                chai.assert.equal(res.statusCode, 200);
+                                chai.assert.equal(res.body.trainer, 'arnautfdez');
+                                chai.assert.equal(res.body.team.length, 2);
+                                chai.assert.equal(res.body.team[0].name, 'Charizard');
+                                chai.assert.equal(res.body.team[1].name, 'Blastoise');
+                                done();
+                            });
                     });
             });
     });

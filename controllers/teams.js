@@ -1,7 +1,7 @@
 const teamsDatabase = {};
 
 const bootstrapTeam = (userId) => {
-    teamsDatabase[userId] = [{name: 'Charizard'}, {name: 'Blastoise'}];
+    teamsDatabase[userId] = [];
 }
 
 const getTeamOfUser = (userId) => {
