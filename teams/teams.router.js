@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-require('../auth')(passport);
+require('../tools/auth')(passport);
 const axios = require('axios').default;
 
-const teamsController = require('../controllers/teams');
-const { getUser } = require('../controllers/users');
+const teamsController = require('./teams.controller');
+const { getUser } = require('../auth/users.controller');
 
 router.route('/')
     .get(passport.authenticate('jwt', {session: false}),
@@ -26,11 +26,9 @@ router.route('/pokemons')
     .post(passport.authenticate('jwt', {session: false}),
         (req, res) => {
         let pokemonName = req.body.name;
-        console.log('calling pokeapi')
         axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName.toLowerCase()}`)
             .then(function (response) {
                 // handle success
-                console.log(response.data.id)
                 let pokemon = {
                     name: pokemonName,
                     pokedexNumber: response.data.id
@@ -41,7 +39,6 @@ router.route('/pokemons')
             })
             .catch(function (error) {
                 // handle error
-                console.log(error);
                 res.status(400).json({message: error});
             })
             .then(function () {
