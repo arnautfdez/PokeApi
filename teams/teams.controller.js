@@ -10,7 +10,10 @@ const cleanUpTeam = () => {
 }
 
 const bootstrapTeam = (userId) => {
-    teamsDatabase[userId] = [];
+    return new Promise((resolve, reject) => {
+        teamsDatabase[userId] = [];
+        resolve();
+    })
 }
 
 const getTeamOfUser = (userId) => {
@@ -22,7 +25,7 @@ const getTeamOfUser = (userId) => {
 const addPokemon = (userId, pokemon) => {
     return new Promise((resolve, reject) => {
         if (teamsDatabase[userId].length === 6) {
-            reject();
+            reject('Already have 6 pokemon');
         } else {
             teamsDatabase[userId].push(pokemon);
             resolve();
@@ -31,13 +34,19 @@ const addPokemon = (userId, pokemon) => {
 }
 
 const deletePokemonAt = (userId, index) => {
-    if (teamsDatabase[userId][index]) {
-        teamsDatabase[userId].splice(index,1);
-    }
+    return new Promise((resolve, reject) => {
+        if (teamsDatabase[userId][index]) {
+            teamsDatabase[userId].splice(index,1);
+        }
+        resolve();
+    })
 }
 
 const setTeam = (userId, team) => {
-    teamsDatabase[userId] = team;
+    return new Promise((resolve, reject) => {
+        teamsDatabase[userId] = team;
+        resolve();
+    })
 }
 
 exports.bootstrapTeam = bootstrapTeam;
