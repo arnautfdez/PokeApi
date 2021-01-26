@@ -26,6 +26,8 @@ const registerUser = (userName, password) => {
     })
 }
 
+registerUser('arnautfdez', '1234');
+
 const getUser = (userId) => {
     return new Promise((resolve, reject) => {
         resolve(userDatabase[userId]);
