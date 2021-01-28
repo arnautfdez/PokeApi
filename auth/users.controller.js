@@ -1,15 +1,17 @@
 const uuid = require('uuid');
 const crypto = require('../tools/crypto');
 const teams = require('../teams/teams.controller');
+const mongoose = require('mongoose');
+const { to } = require("../tools/to");
 
-let userDatabase = {};
-// userId -> userData
+const UserModel = mongoose.model('UserModel',
+    { userName: String, password: String, userId: String });
 
 const cleanUpUsers = () => {
-    return new Promise((resolve, reject) => {
-        userDatabase = {};
+    return new Promise(async (resolve, reject) => {
+        await UserModel.deleteMany({}).exec();
         resolve();
-    })
+    });
 }
 
 const registerUser = (userName, password) => {
@@ -17,34 +19,31 @@ const registerUser = (userName, password) => {
         let hashedPwd = crypto.hashPasswordSync(password);
         // Guardar en la base de datos nuestro usuario
         let userId = uuid.v4();
-        userDatabase[userId] = {
-            userName: userName,
-            password: hashedPwd
-        }
+        let newUser = new UserModel({ userName: userName, password: password, userId: userId});
+        await newUser.save();
         await teams.bootstrapTeam(userId);
         resolve();
-    })
+    });
 }
 
-registerUser('arnautfdez', '1234');
-
 const getUser = (userId) => {
-    return new Promise((resolve, reject) => {
-        resolve(userDatabase[userId]);
-    })
+    return new Promise(async (resolve, reject) => {
+        let [err,result] = await to(UserModel.findOne({userId: userId}).exec());
+        if (err) {
+            return reject(err);
+        }
+        resolve(result);
+    });
 }
 
 const getUserIdFromUserName = (userName) => {
-    return new Promise((resolve, reject) => {
-        for (let user in userDatabase) {
-            if (userDatabase[user].userName === userName) {
-                let userData = userDatabase[user];
-                userData.userId = user;
-                return resolve(userData);
-            }
+    return new Promise(async (resolve, reject) => {
+        let [err,result] = await to(UserModel.findOne({userName: userName}).exec());
+        if (err) {
+            return reject(err);
         }
-        reject('No user found');
-    })
+        resolve(result);
+    });
 }
 
 const checkUserCredentials = (userName, password) => {
@@ -61,7 +60,7 @@ const checkUserCredentials = (userName, password) => {
         } else {
             reject('Missing user');
         }
-    })
+    });
 }
 
 exports.registerUser = registerUser;
